@@ -18,7 +18,8 @@ let state = {
     t: null,
     numVibrations: null,
     x: null,
-    T: null
+    T: null,
+    T0: null,
 }
 
 //входные параметры
@@ -40,7 +41,6 @@ mass.addEventListener("change", ()=>{
 rate.addEventListener("change", refreshProps);
 x0.addEventListener("change", ()=> {
     state.x0 = x0.value
-    ball.style.transform = `translateY(${x0.value}px)`
     spring.style.height = `${+400 + +x0.value}px`
     spring.style.backgroundSize = `45px ${+400 + +x0.value}px`
     clearCharacts()
@@ -88,7 +88,6 @@ function insertX0Option(option) {
         if (item === 10) {
             state.x0 = item
             newOption.setAttribute('selected', 'selected');
-            ball.style.transform = `translateY(${item}px)`
             spring.style.height = `${+400 + +item}px`
             spring.style.backgroundSize = `45px ${+400 + +item}px`
         }
@@ -102,13 +101,16 @@ function refreshProps(){
 }
 
 //запуск анимации
+let timeoutID;
 function playAnimation(){
     activateStopButton();
     disableParams();
     clearCharacts();
     calcT();
     timeFreq();
-    timeSec();
+    timeoutID = setTimeout(()=>{
+        timeSec();
+    }, state.T0)
 }
 
 //остановка анимации
@@ -116,6 +118,12 @@ function stopAnimation(){
     activatePlayButton()
     clearInterval(intervalID);
     clearInterval(intervalID2);
+    clearTimeout(timeoutID);
+
+    //возвращение маятника в начальное положение x0
+    spring.style.height = `${+400 + +state.x0}px`
+    spring.style.backgroundSize = `45px ${+400 + +state.x0}px`
+
     enableParams()
 }
 
@@ -147,6 +155,8 @@ function clearCharacts(){
     state.t = null;
     state.numVibrations = null;
     state.x = null;
+    state.T0 = null;
+    state.T = null;
     time.innerHTML = state.t;
     x.innerHTML = state.x
     numVibrations.innerHTML = state.numVibrations
@@ -154,10 +164,9 @@ function clearCharacts(){
 
 //Определяет и устанавливает период колебаний
 function calcT(){
-    state.T = Math.PI * Math.sqrt(mass.value / rate.value) * 1000;
-    console.log(rate.value);
-    spring.style.transition = `all ease-in-out ${state.T/1000}s`;
-    ball.style.transition = `all ease-in-out ${state.T/1000}s`
+    state.T0 = Math.PI * Math.sqrt(mass.value / rate.value) * 1000;
+    spring.style.transition = `all ease-in-out ${state.T0/1000}s`;
+    ball.style.transition = `all ease-in-out ${state.T0/1000}s`
 }
 
 //•	циклическая частота собственных колебаний 
@@ -173,11 +182,13 @@ function cyclicFreq() {
 let intervalID;
 function timeFreq(){
     state.numVibrations = 0;
+    state.numVibrations = state.numVibrations - (state.t / state.T0)*1000/2;
     intervalID = setInterval(() => {
         if (state.x0 > 0) {
+            state.T += state.T0
             calcX();
-        } if (state.x0 == 0) {clearInterval(intervalID), clearInterval(intervalID2), enableParams(), activatePlayButton()}
-    } , state.T);
+        } if (state.x0 == 0) {clearInterval(intervalID), clearInterval(intervalID2), clearTimeout(timeoutID), enableParams(), activatePlayButton()}
+    } , state.T0);
 }
 
 //Счетчик секунд
@@ -190,35 +201,22 @@ function timeSec(){
             t++;
             state.t = t;
             time.innerHTML = t + ' s';
-        } if (state.x0 == 0) {clearInterval(intervalID), clearInterval(intervalID2), enableParams(), activatePlayButton()}
+        } if (state.x0 == 0) {clearInterval(intervalID), clearInterval(intervalID2), clearTimeout(timeoutID), enableParams(), activatePlayButton()}
     }, 1000)
 }
 
 //•	количество полных колебаний 
 function calcN(){
-    state.numVibrations = (state.t / state.T)*1000/2;
+    state.numVibrations = (state.t / state.T0)*1000/2;
     numVibrations.innerHTML = Math.round(state.numVibrations)
 }
 
 //•	координата x
 function calcX(){
-    let xCoord = state.x0*Math.cos(state.w0*state.t)
-    calcN()
-    if (Math.abs(xCoord) > Math.abs(state.x) && state.x !== null) {
-        clearInterval(intervalID);
-        clearInterval(intervalID2)
-        xCoord = 0;
-        enableParams()
-        activatePlayButton()
-    }
-    if (state.x0 === 0) {
-        clearInterval(intervalID);
-        clearInterval(intervalID2);
-        xCoord = 0;
-    }
+    let xCoord = state.x0*Math.cos(state.w0*state.T/1000)
+    spring.style.height = `${+400 + +xCoord}px`
+    spring.style.backgroundSize = `45px ${+400 + +xCoord}px`;
     x.innerHTML = xCoord;
     state.x = xCoord;
-    ball.style.transform = `translateY(${xCoord}px)`;
-    spring.style.height = `${+400 + +xCoord}px`
-    spring.style.backgroundSize = `45px ${+400 + +xCoord}px`
+    calcN()
 }
