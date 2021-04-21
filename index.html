@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spring Pendulum</title>
+  </head>
+  <body>
+    <div class="wrap">
+        <div class="visual-area">
+            <div class="title">Visual Model</div>
+            <div class="model">
+                <div class="base"></div>
+                <div id="spring"></div>
+                <div class="ball"></div>
+            </div>
+            <div class="button-area">
+                <button class="play-button">Play</button>
+                <button class="stop-button">Stop</button>
+            </div>
+        </div>
+        <div class="params-area">
+            <div class="title">Parameters</div>
+            <div class="params">
+                <div class="param__block">
+                    <label for="m">Mass (m):</label>
+                    <select class="param" id="m">
+                        <option value disabled selected>Choose mass (m)</option>
+                    </select>
+                </div>
+                <div class="param__block">
+                    <label for="k">Rate (k):</label>
+                    <select class="param" id="k">
+                        <option value disabled selected>Choose rate (k)</option>
+                    </select>
+                </div>
+                <div class="param__block">
+                    <label for="x0">x0:</label>
+                    <select class="param" id="x0">
+                        <option value disabled selected>Choose x0</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="characteristics-area">
+            <div class="title">Characteristics</div>
+            <div class="characts">
+                <div class="charact__block">
+                    <div class="charact-title">Cyclic natural frequency (ω0):</div>
+                    <div class="charact" id='w0'></div>           
+                </div>
+                <div class="charact__block">
+                    <div class="charact-title">Time (t):</div>
+                    <div class="charact" id='time'></div>  
+                </div>
+                <div class="charact__block">
+                    <div class="charact-title">Number of total vibrations:</div>
+                    <div class="charact" id='total-V'></div>  
+                </div>
+                <div class="charact__block">
+                    <div class="charact-title">X:</div>
+                    <div class="charact" id='x'></div>  
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+  </body>
+</html>
