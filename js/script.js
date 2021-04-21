@@ -177,7 +177,7 @@ function timeFreq(){
         if (state.x0 > 0) {
             calcX();
         } if (state.x0 == 0) {clearInterval(intervalID), clearInterval(intervalID2), enableParams(), activatePlayButton()}
-    } , 1000);
+    } , state.T);
 }
 
 //Счетчик секунд
